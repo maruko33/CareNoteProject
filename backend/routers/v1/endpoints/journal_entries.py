@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
-from schemas.journal_entries import JournalEntryCreate,JournalEntryOut
+from schemas.journal_entries import JournalEntryCreate,JournalEntryOut,JournalEntryReversalIn
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.deps import get_db, get_current_user, pagination_params
 from models.user import User
-from crud.journal_entries import create_journal_entry,list_journal_entries,get_journal_entries
+from crud.journal_entries import create_journal_entry,list_journal_entries,get_journal_entries,reverse_journal_entries
 
 router = APIRouter(prefix="/journal_entry",tags=["journal_entry"])
 
@@ -31,3 +31,12 @@ async def get_journal(
     current_user: User = Depends(get_current_user),
 ):
     return await get_journal_entries(id,db,current_user.id)
+
+@router.post("/{id}/reverse",response_model=JournalEntryOut)
+async def reverse_journal(
+    id : int,
+    journal_reversal_data:JournalEntryReversalIn,
+    db : AsyncSession = Depends(get_db),
+    current_user : User = Depends(get_current_user),
+):
+    return await reverse_journal_entries(id,journal_reversal_data, db, current_user.id)
