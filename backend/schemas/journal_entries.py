@@ -21,3 +21,7 @@ class JournalEntryOut(BaseModel):
     reversal_of_entry_id:int | None = None
     created_at: datetime
     postings: list[PostingOut] = []
+
+class JournalEntryReversalIn(BaseModel):
+    occurred_at: datetime | None = None
+    description: str | None = None
