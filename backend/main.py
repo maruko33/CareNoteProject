@@ -55,3 +55,6 @@ def health():
 ####fastAPI：
 #uvicorn main:app --reload                         start fastAPI
 #uvicorn main:app --reload --host 0.0.0.0 --port 8000 so that could be accessed by frontend
+
+####FrontEnd:
+#npm run dev

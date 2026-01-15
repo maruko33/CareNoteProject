@@ -15,24 +15,37 @@ export function AuthProvider({ children }) {
     else localStorage.removeItem("token");
   }, [token]);
 
-  async function login(email, password) {
-    // ⚠️这里的 endpoint 可能要按你后端实际路径改
-    const res = await api.post("/auth/login", { email, password });
+async function login(email, password) {
+  // 后端要的是 form-urlencoded，不是 JSON
+  const form = new URLSearchParams();
+  form.append("grant_type", "password"); // Swagger 里 pattern: ^password$，加上最稳
+  form.append("username", email);        // 你这里用 email 当 username
+  form.append("password", password);
 
-    // 常见返回：{ access_token: "..." }
-    const t = res.data.access_token ?? res.data.token;
-    setToken(t);
-  }
+  const res = await api.post("/auth/login", form, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+
+  const t = res.data.access_token; // Swagger 明确就是 access_token
+  setToken(t);
+}
 
   function logout() {
     setToken(null);
   }
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ token, login, logout, me}}>
       {children}
     </AuthContext.Provider>
   );
+}
+
+async function me() {
+  const res = await api.get("/auth/me");
+  return res.data;
 }
 
 export function useAuth() {

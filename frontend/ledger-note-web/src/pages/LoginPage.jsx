@@ -1,14 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function LoginPage() {
   const nav = useNavigate();
-  const { login } = useAuth();
+  const { token, login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState(null);
+  useEffect(() => {
+      if (token) nav("/accounts");
+    }, [token, nav]);
+
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -33,6 +39,9 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Sign in</button>
+        <div style={{ marginTop: 10 }}>
+          No account? <Link to="/register">Register</Link>
+        </div>
         {err && <div style={{ color: "crimson" }}>{err}</div>}
       </form>
     </div>
